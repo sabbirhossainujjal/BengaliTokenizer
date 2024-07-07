@@ -1,4 +1,6 @@
-## currently working
+
+import os
+from dotenv import load_dotenv
 from tokenizers import Tokenizer, AddedToken
 from tokenizers.models import BPE
 from tokenizers.trainers import BpeTrainer
@@ -6,7 +8,7 @@ from tokenizers.pre_tokenizers import Whitespace
 from typing import List, Optional, Union
 from transformers import PreTrainedTokenizerFast
 from characters import *
-
+load_dotenv()
 class BengaliBPETokenizer:
     def __init__(self):
         ## initialize the bpe tokenizer
@@ -112,18 +114,24 @@ if __name__ == "__main__":
     initial_tokens = bangla_alphabets + conjunct_consonants + conj_with_kar + conj_with_fola
 
     tokenizer = BengaliBPETokenizer()
-    files = ["demo_1M.txt"]
+    files = [
+        "/storagex/Sabbir/BengaliTokenizer/characters.txt",
+        "/storage2/llm_data/BanglaLM_process_v2.txt"
+        ]
+    
     hf_tokenizer = tokenizer.train_tokenizer(
         files=files,
         vocab_size=30_000,
         special_tokens= [
             
         ],
-        initial_tokens= initial_tokens,
+        initial_tokens=initial_tokens,
         min_frequency=2,
         limit_alphabet=500,
         show_progress=True,
-        push_to_hub=False
+        push_to_hub=True,
+        hf_repo_id="Virus-Proton/CustomTokenizer",
+        hf_token=os.getenv("hf_token")
     )
 
     tokenizer.validate_predefined_tokens()
