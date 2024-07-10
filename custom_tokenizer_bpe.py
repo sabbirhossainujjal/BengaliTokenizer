@@ -1,18 +1,26 @@
 
 import os
+import time
 from dotenv import load_dotenv
 from tokenizers import Tokenizer, AddedToken
 from tokenizers.models import BPE
 from tokenizers.trainers import BpeTrainer
+from tokenizers.processors import BertProcessing
 from tokenizers.pre_tokenizers import Whitespace
 from typing import List, Optional, Union
 from transformers import PreTrainedTokenizerFast
 from characters import *
 load_dotenv()
+
 class BengaliBPETokenizer:
     def __init__(self):
         ## initialize the bpe tokenizer
-        self._tokenizer = Tokenizer(BPE(unk_token="<unk>"))
+        self._tokenizer = Tokenizer(BPE(
+            unk_token="[UNK]",
+            continuing_subword_prefix="##",
+            fuse_unk=True,
+            byte_fallback=False
+            ))
         # to ensure no tokens with space
         self._tokenizer.pre_tokenizer = Whitespace()
 
@@ -56,7 +64,15 @@ class BengaliBPETokenizer:
         new_tokens = [token for token in all_sp_tokens if token not in self._tokenizer.get_vocab()]
         self._tokenizer.add_tokens(new_tokens)
 
+        # save the tokenizer
+        self._tokenizer.save("bengali_tokenizer_test.json")
+        
+        ### post processing
+        # self.post_processing()
+        
+    
         transformer_tokenizer = self.create_hf_tokenizer(
+            tokenizer=self._tokenizer,
             push_to_hub=push_to_hub,
             hf_repo_id=hf_repo_id,
             hf_token=hf_token
@@ -64,20 +80,27 @@ class BengaliBPETokenizer:
         
         return transformer_tokenizer
 
+    # def post_processing(self):
+    #     self._tokenizer._tokenizer.post_processor = BertProcessing(
+    #         ("</s>", self._tokenizer.token_to_id("</s>")),
+    #         ("<s>", self._tokenizer.token_to_id("<s>")),
+    #     )
+
     def create_hf_tokenizer(
         self,
+        tokenizer,
         push_to_hub:bool=True,
         hf_repo_id:str=None,
         hf_token:str=None
     ):
         transformer_tokenizer = PreTrainedTokenizerFast(
-            tokenizer_object=self._tokenizer #tokenizer_file="tokenizer.json"
+            tokenizer_object = tokenizer #self._tokenizer #tokenizer_file="tokenizer.json"
             )
         
         if push_to_hub and hf_repo_id and hf_token:
             transformer_tokenizer.push_to_hub(
                 repo_id = hf_repo_id,
-                token=hf_token
+                token = hf_token
                 )
             print(f"Tokenizer is saved to Huggingface. Repo id: {hf_repo_id}")
         
@@ -110,27 +133,55 @@ class BengaliBPETokenizer:
 
 if __name__ == "__main__":
 
-    special_tokens = ["<s>", "</s>", "<unk>", "<pad>", "<mask>"]
+    special_tokens = ["[PAD]", "[UNK]", "[CLS]", "[SEP]", "[MASK]"] #["<s>", "</s>", "<unk>", "<pad>", "<mask>"]
     initial_tokens = bangla_alphabets + conjunct_consonants + conj_with_kar + conj_with_fola
 
     tokenizer = BengaliBPETokenizer()
     files = [
         "/storagex/Sabbir/BengaliTokenizer/characters.txt",
-        "/storage2/llm_data/BanglaLM_process_v2.txt"
+        "/storage2/llm_data/BanglaLM_process_v2.txt",
+        '/storage2/llm_data/data_all_text/AllTextData/ai4bharat.txt',
+        '/storage2/llm_data/data_all_text/AllTextData/banglaLM_process_v1.txt',
+        '/storage2/llm_data/data_all_text/AllTextData/BanglaLM_raw.txt',
+        '/storage2/llm_data/data_all_text/AllTextData/bn.2012.txt',
+        '/storage2/llm_data/data_all_text/AllTextData/bn.2013_20.txt',
+        '/storage2/llm_data/data_all_text/AllTextData/bn.2013_48.txt',
+        '/storage2/llm_data/data_all_text/AllTextData/bn.2014_15.txt',
+        '/storage2/llm_data/data_all_text/AllTextData/bn.2014_23.txt',
+        '/storage2/llm_data/data_all_text/AllTextData/bn.2014_35.txt',
+        '/storage2/llm_data/data_all_text/AllTextData/bn.2014_41.txt',
+        '/storage2/llm_data/data_all_text/AllTextData/bn.2014_42.txt',
+        '/storage2/llm_data/data_all_text/AllTextData/bn.2014_49.txt',
+        '/storage2/llm_data/data_all_text/AllTextData/bn.2014_52.txt',
+        '/storage2/llm_data/data_all_text/AllTextData/bn.2015_06.txt',
+        '/storage2/llm_data/data_all_text/AllTextData/bn.2015_11.txt',
+        '/storage2/llm_data/data_all_text/AllTextData/bn.2015_14.txt',
+        '/storage2/llm_data/data_all_text/AllTextData/bn.2015_18.txt',
+        '/storage2/llm_data/data_all_text/AllTextData/bn.2015_22.txt',
+        '/storage2/llm_data/data_all_text/AllTextData/bn.2015_27.txt',
+        '/storage2/llm_data/data_all_text/AllTextData/bn.2015_32.txt',
+        '/storage2/llm_data/data_all_text/AllTextData/bn.2015_35.txt',
+        '/storage2/llm_data/data_all_text/AllTextData/bn.2015_40.txt',
+        '/storage2/llm_data/data_all_text/AllTextData/bn.2015_48.txt',
+        '/storage2/llm_data/data_all_text/AllTextData/bn.2016_30.txt',
+        '/storage2/llm_data/data_all_text/AllTextData/bn.2016_50.txt',
+        '/storage2/llm_data/data_all_text/AllTextData/bn.2017_17.txt',
+        '/storage2/llm_data/data_all_text/AllTextData/cc_100.txt',
+        '/storage2/llm_data/data_all_text/AllTextData/output_text_file.txt',
+        '/storage2/llm_data/data_all_text/AllTextData/raw_bangla_for_BERT.txt'
         ]
     
+    st = time.time()
     hf_tokenizer = tokenizer.train_tokenizer(
         files=files,
-        vocab_size=30_000,
-        special_tokens= [
-            
-        ],
+        vocab_size=52_000,
+        special_tokens=special_tokens,
         initial_tokens=initial_tokens,
-        min_frequency=2,
+        min_frequency=4,
         limit_alphabet=500,
         show_progress=True,
         push_to_hub=True,
-        hf_repo_id="Virus-Proton/CustomTokenizer",
+        hf_repo_id="aci-mis-team/BengaliBPETokenizer",
         hf_token=os.getenv("hf_token")
     )
 
@@ -138,6 +189,8 @@ if __name__ == "__main__":
 
     # Save the tokenizer
     tokenizer.save("bengali_tokenizer.json")
+    
+    print(f"Total time taken for training: {(time.time() - st)/3600}")
 
     bengali_text =' আমাদের কোম্পানি ভোটদান পণ্য তৈরীর চীন মধ্যে নেতা এক।'
     encoded = hf_tokenizer.encode(bengali_text)
