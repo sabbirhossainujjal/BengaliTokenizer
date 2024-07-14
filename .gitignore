@@ -2,3 +2,4 @@ __pycache__/
 Trails/
 *.ipynb2
 venv/
+Tokenizer_Vocabs/
