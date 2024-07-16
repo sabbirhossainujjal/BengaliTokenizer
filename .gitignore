@@ -3,3 +3,5 @@ Trails/
 *.ipynb
 *.vocab
 *.model
+venv/
+Tokenizer_Vocabs/
