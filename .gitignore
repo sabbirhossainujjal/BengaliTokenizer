@@ -5,3 +5,4 @@ Trails/
 *.model
 venv/
 Tokenizer_Vocabs/
+.env
