@@ -6,3 +6,5 @@ Trails/
 venv/
 Tokenizer_Vocabs/
 .env
+data_download.py
+output/

@@ -115,6 +115,6 @@ if __name__=="__main__":
     )
     hf_tokenizer.save_pretrained('/storagex/Sabbir/BengaliTokenizer/hf_tokenizer')
     hf_tokenizer.push_to_hub(
-                repo_id = "aci-mis-team/BengaliBPETokenizer",
+                repo_id = "Virus-Proton/llm_tokenizer",
                 token = os.getenv("hf_token")
                 )
