@@ -7,10 +7,13 @@ from typing import List
 from dotenv import load_dotenv
 load_dotenv()
 
+
 class HFTokenizerTrainer:
     def __init__(self, base_tokenizer_name):
         self.base_tokenizer = AutoTokenizer.from_pretrained(base_tokenizer_name)
-        self.bengali_regex_pattern = r'([\p{Bengali}\p{Latin}\p{Nd}]+)|\S'
+        self.bengali_regex_pattern = r"""[^\r\n\p{Bengali}\p{L}\p{Nd}]?[\p{Bengali}\u0981-\u09C4\u09C7\u09C8\u09CB\u09CC\u09CD\p{L}]*[\p{Bengali}\u0981-\u09C4\u09C7\u09C8\u09CB\u09CC\u09CD\p{L}]+|[^\r\n\p{Bengali}\p{L}\p{Nd}]?[\p{Bengali}\u0981-\u09C4\u09C7\u09C8\u09CB\u09CC\u09CD\p{L}]+[\p{Bengali}\u0981-\u09C4\u09C7\u09C8\u09CB\u09CC\u09CD\p{L}]*|[০-৯]{1,4}| ?\p{N}+| ?[^\s\p{Bengali}\p{L}\p{Nd}]+[\r\n/]*|\s*[\r\n]+|\s+(?!\S)|\s+"""
+
+        
         
     def setup_tokenizer(self):
         self.base_tokenizer.pre_tokenizer = Sequence([
@@ -66,14 +69,21 @@ class HFTokenizerTrainer:
 
 
 if __name__ == "__main__":
+    files = [
+        '/storage2/llm_data/data_all_text/AllTextData/ai4bharat.txt',
+        '/storage2/llm_data/data_all_text/AllTextData/cc_100.txt',
+        '/storage2/llm_data/data_all_text/AllTextData/c4_New.txt',
+        # '/storage2/llm_data/data_all_text/AllTextData/CulturaX.txt'
+        ]
     trainer = HFTokenizerTrainer(
-        base_tokenizer_name="bert-base-uncased",
+        base_tokenizer_name="Qwen/Qwen2-0.5B",
     )
     new_tokenizer = trainer.train_and_push(
         files=["demo.txt"],
-        output_dir="output",
+        output_dir="output_text",
         push_to_hub=True,
         repo_id="aci-mis-team/qwen2_tokenizer_32k",
-        token=os.getenv("hf_token"),
+        token=os.getenv("HF_TOKEN"),
         vocab_size=32_000
     )
+    
