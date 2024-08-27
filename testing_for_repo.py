@@ -121,16 +121,16 @@ if __name__ == "__main__":
         ]
     trainer = HFTokenizerTrainer("Qwen/Qwen2-0.5B")
     
-    bengali_regex_pattern = r"""[^\r\n\p{Bengali}\p{L}\p{Nd}]?[\p{Bengali}\u0981-\u09C4\u09C7\u09C8\u09CB\u09CC\u09CD\p{L}]*[\p{Bengali}\u0981-\u09C4\u09C7\u09C8\u09CB\u09CC\u09CD\p{L}]+|[^\r\n\p{Bengali}\p{L}\p{Nd}]?[\p{Bengali}\u0981-\u09C4\u09C7\u09C8\u09CB\u09CC\u09CD\p{L}]+[\p{Bengali}\u0981-\u09C4\u09C7\u09C8\u09CB\u09CC\u09CD\p{L}]*|[০-৯]{1,4}| ?\p{N}+| ?[^\s\p{Bengali}\p{L}\p{Nd}]+[\r\n/]*|\s*[\r\n]+|\s+(?!\S)|\s+"""
+    # bengali_regex_pattern = r"""[^\r\n\p{Bengali}\p{L}\p{Nd}]?[\p{Bengali}\u0981-\u09C4\u09C7\u09C8\u09CB\u09CC\u09CD\p{L}]*[\p{Bengali}\u0981-\u09C4\u09C7\u09C8\u09CB\u09CC\u09CD\p{L}]+|[^\r\n\p{Bengali}\p{L}\p{Nd}]?[\p{Bengali}\u0981-\u09C4\u09C7\u09C8\u09CB\u09CC\u09CD\p{L}]+[\p{Bengali}\u0981-\u09C4\u09C7\u09C8\u09CB\u09CC\u09CD\p{L}]*|[০-৯]{1,4}| ?\p{N}+| ?[^\s\p{Bengali}\p{L}\p{Nd}]+[\r\n/]*|\s*[\r\n]+|\s+(?!\S)|\s+"""
     
-    pre_tokenizer = Sequence([
-                Split(pattern=bengali_regex_pattern, behavior="isolated"),
-                WhitespaceSplit(),
-                ByteLevel(add_prefix_space=False, trim_offsets=False)
-                ])
-    trainer.setup_tokenizer(
-        pre_tokenizer=pre_tokenizer
-    )
+    # pre_tokenizer = Sequence([
+    #             Split(pattern=bengali_regex_pattern, behavior="isolated"),
+    #             WhitespaceSplit(),
+    #             ByteLevel(add_prefix_space=False, trim_offsets=False)
+    #             ])
+    # trainer.setup_tokenizer(
+    #     pre_tokenizer=pre_tokenizer
+    # )
     
     new_tokenizer = trainer.train(
         files=files,
