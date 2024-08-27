@@ -19,15 +19,14 @@ class BnBPETokenizer:
         self.tokenizer = Tokenizer.from_pretrained(base_model_name)
         
         # Set the normalizer to NFC
-        self.tokenizer.normalizer = normalizers.Sequence([NFC()])
+        self.tokenizer.backend_tokenizer.normalizer = self.base_tokenizer.backend_tokenizer.normalizer
         
         # Set up the pre-tokenizer
-        self.tokenizer.pre_tokenizer = pre_tokenizers.Sequence([
+        self.tokenizer.backend_tokenizer.pre_tokenizer = pre_tokenizers.Sequence([
             Split(
                 pattern=bengali_regex_pattern,
                 behavior="isolated"
-            ),
-            # ByteLevel(add_prefix_space=False, trim_offsets=False, use_regex=False)
+            )
         ])
         
     def train(self, files, vocab_size=30000, min_frequency=2):
@@ -60,13 +59,13 @@ class BnBPETokenizer:
             model_max_length=model_max_length,
         )
         self.hf_tokenizer.bos_token = "<|im_start|>"
-        # self.hf_tokenizer.bos_token_id = self.tokenizer.token_to_id("<|im_start|>")
+        self.hf_tokenizer.bos_token_id = self.tokenizer.token_to_id("<|im_start|>")
         self.hf_tokenizer.pad_token = self.base_tokenizer.pad_token
-        # self.hf_tokenizer.pad_token_id = self.tokenizer.token_to_id("<|endoftext|>")
+        self.hf_tokenizer.pad_token_id = self.tokenizer.token_to_id("<|endoftext|>")
         self.hf_tokenizer.eos_token = self.base_tokenizer.eos_token
-        # self.hf_tokenizer.eos_token_id = self.tokenizer.token_to_id("<|im_end|>")
+        self.hf_tokenizer.eos_token_id = self.tokenizer.token_to_id("<|im_end|>")
         self.hf_tokenizer.unk_token = "<unk>"
-        # self.hf_tokenizer.unk_token_id = self.tokenizer.token_to_id("<unk>")
+        self.hf_tokenizer.unk_token_id = self.tokenizer.token_to_id("<unk>")
         self.hf_tokenizer.mask_token = "<mask>"
         self.hf_tokenizer.mask_token_id = self.tokenizer.token_to_id("<mask>")
 
