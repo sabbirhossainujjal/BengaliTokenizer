@@ -31,11 +31,8 @@ def _line_generator(file_path: str):
     except IOError as e:
         print(f"Error reading file {file_path}: {e}")
 
-<<<<<<< HEAD
 def batch_generator(files: List[str], batch_size: int = 5000):
-=======
-def batch_generator(files: List[str], batch_size: int = 1000):
->>>>>>> 77fa1afa5fed987bb77b01cb9c6e9ab173c3f18c
+
     """
     Generate batches of lines from multiple files.
 
