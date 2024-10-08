@@ -7,11 +7,8 @@ from tqdm import tqdm
 from dotenv import load_dotenv
 load_dotenv()
 
-<<<<<<< HEAD
 base_tokenizer_name = "Qwen2-0.5B/"
-=======
-base_tokenizer_name = "qwen_tokenizer/"
->>>>>>> 77fa1afa5fed987bb77b01cb9c6e9ab173c3f18c
+
 base_tokenizer = AutoTokenizer.from_pretrained(base_tokenizer_name)
 
 
