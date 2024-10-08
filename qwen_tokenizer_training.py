@@ -7,7 +7,11 @@ from tqdm import tqdm
 from dotenv import load_dotenv
 load_dotenv()
 
+<<<<<<< HEAD
 base_tokenizer_name = "Qwen2-0.5B/"
+=======
+base_tokenizer_name = "qwen_tokenizer/"
+>>>>>>> 77fa1afa5fed987bb77b01cb9c6e9ab173c3f18c
 base_tokenizer = AutoTokenizer.from_pretrained(base_tokenizer_name)
 
 
@@ -27,7 +31,11 @@ def _line_generator(file_path: str):
     except IOError as e:
         print(f"Error reading file {file_path}: {e}")
 
+<<<<<<< HEAD
 def batch_generator(files: List[str], batch_size: int = 5000):
+=======
+def batch_generator(files: List[str], batch_size: int = 1000):
+>>>>>>> 77fa1afa5fed987bb77b01cb9c6e9ab173c3f18c
     """
     Generate batches of lines from multiple files.
 
@@ -49,10 +57,10 @@ def batch_generator(files: List[str], batch_size: int = 5000):
         if batch:
             yield batch
             
-            
-            
+
 vocab_size = 48_000
 output_dir = "qwen_tokenizer_trained_48k"
+
 files = [
     # "/storagex/Sabbir/BengaliTokenizer/demo_edited.txt"
     '/storage2/llm_data/data_all_text/AllTextData/ai4bharat.txt',
@@ -68,6 +76,7 @@ tokenizer = base_tokenizer.train_new_from_iterator(
 )
 
 tokenizer.save_pretrained(output_dir)
+
 tokenizer.push_to_hub("aci-mis-team/Qwen-2-48k", token=os.getenv("HF_TOKEN"))
 
 
